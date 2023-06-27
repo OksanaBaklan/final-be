@@ -5,6 +5,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import logger from "morgan";
+import swaggerUi from "swagger-ui-express";
+import swaggerDocument from "./swagger.json" assert { type: "json" };
 
 import usersRouter from "./routes/usersRouter.js";
 
@@ -12,6 +14,10 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// http://localhost:5656/api-docs/
+
 
 app.use(cors());
 app.use(express.json());

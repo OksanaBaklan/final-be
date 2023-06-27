@@ -64,4 +64,7 @@ userSchema.methods.setAvatarURL = async function (email) {
     throw new Error("Failed to generate Avatar image");
   }
 };
-export default mongoose.model("User", userSchema, "User");
+
+const User = mongoose.model("User", userSchema);
+
+export default User;
