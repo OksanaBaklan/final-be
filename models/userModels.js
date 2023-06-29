@@ -22,6 +22,14 @@ export const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
+    token: {
+      type: String,
+      default: null,
+    },
+    verificationToken: {
+      type: String,
+      // required: [true, "Verify token is required"],
+    },
     hashedPassword: {
       type: String,
       required: true,
@@ -57,41 +65,6 @@ userSchema.pre("save", async function () {
   this.hashedPassword = newlyCreateHashedPswd;
 });
 
-userSchema.post("save", async (doc, next) => {
-  try {
-    const JWT_SECRET_KEY = process.env.SECRET_KEY;
-
-    const payload = {
-      email: doc.email,
-      firstName: doc.firstName,
-      userId: doc._id,
-    };
-    const token = jwt.sign(payload, JWT_SECRET_KEY, { expiresIn: 3600 });
-
-    const subject = "Account created at POST-APP";
-    const plainText = `Wellcome ${doc.firstName}! Your account has been created with use`;
-    const htmlText = `
-                          <h2>Welcome ${doc.firstName}!</h2>
-                          <br/>
-                          <p>Welcome to wallet-app. your  account has been created successfully</p>
-                          <p>Please click on the below link to confirm your email and activate your account</p>
-                          <a href="${SITE_NAME}/confirm-email/${token}">Confirm</a>`;
-
-    const emailStatus = await sendEmail(
-      doc.email,
-      subject,
-      plainText,
-      htmlText
-    );
-    if (!emailStatus) {
-      const err = new Error("Failed to send email");
-      err.statusCode = 400;
-      throw err;
-    }
-  } catch (err) {
-    next(err);
-  }
-});
 
 userSchema.method("setAvatarURL", async function (email) {
   try {
