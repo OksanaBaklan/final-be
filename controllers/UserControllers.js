@@ -56,9 +56,58 @@ export const createUser = async (req, res, next) => {
       userName: newUser.userName,
       email: newUser.email,
       avatar: newUser.avatarURL,
-      verify: newUser.verify,
+      verified: newUser.verified,
     },
   });
+};
+
+//email confirm
+export const emailConfirmationHandler = async (req, res, next) => {
+  const { email } = req.body;
+
+  if (!email) {
+    const err = new Error("Missing required field email");
+    err.statusCode = 400;
+    throw err;
+  }
+  const user = await User.findOne({ email });
+
+  console.log(user);
+  if (!user) {
+    const err = new Error("User not found");
+    err.statusCode = 400;
+    throw err;
+  }
+  const { verified, verificationToken } = user;
+  if (verified) {
+    const err = new Error("The verification already done");
+    err.statusCode = 400;
+    throw err;
+  }
+  const data = {
+    to: email,
+    subject: "Confirmation of registration",
+    html: `<a target="_blank" href="${SITE_NAME}/verify/${verificationToken}">Click to confirm registration</a>`,
+    //html: `<a target="_blank" href="${LOCAL_HOST}:${PORT}/api/users/verify/${user.verificationToken}">Click to confirm registration</a>  `,
+  };
+  await sendEmail(data);
+
+  res.status(200).json("Verification email sent");
+};
+
+// verify token
+export const verificationTokenHandler = async (req, res, next) => {
+  const { verificationToken } = req.params;
+  const user = await User.findOne({ verificationToken });
+  if (!user) {
+    throw new NotFound("User not found");
+  }
+  await User.findByIdAndUpdate(user._id, {
+    verificationToken: null,
+    verified: true,
+  });
+
+  res.status(200).json("Verification successful");
 };
 
 //current user
@@ -123,6 +172,7 @@ export const loginHandler = async (req, res, next) => {
   }
 };
 
+//logout user
 export const logoutHandler = async (req, res, next) => {
   const { _id } = req.user;
   await User.findByIdAndUpdate({ _id }, { token: null });
@@ -130,9 +180,12 @@ export const logoutHandler = async (req, res, next) => {
   res.status(204).json();
 };
 
+//set avatar
 export const avatarHandler = async (req, res, next) => {
+  // const { id } = req.params;
+  // console.log(req.file);
   const id = req.user._id;
-  console.log("df");
+  console.log(req.file);
   const { path: tempUpload, filename } = req.file;
   const newFileName = await renameFile(filename, id);
   const fileUpload = await path.join(avatarsDir, newFileName);
@@ -152,4 +205,18 @@ export const avatarHandler = async (req, res, next) => {
     message: "Image updated",
     data: { User: avatarURL },
   });
+
+  // const gallery = [];
+  // req.files.map((img) => gallery.push(img.filename));
+
+  // const user = await User.findByIdAndUpdate(
+  //   req.userId,
+  //   { $push: { gallery: { $each: gallery } } },
+  //   { new: true }
+  // );
+  // if (user) return res.status(202).json({ gallery: user.gallery });
+
+  // const err = new Error("Something went wrong");
+  // err.statusCode = 400;
+  // throw err;
 };

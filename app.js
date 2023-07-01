@@ -9,15 +9,12 @@ import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger.json" assert { type: "json" };
 
 import usersRouter from "./routes/usersRouter.js";
-
+import transactionRouter from "./routes/transactionsRouter.js";
+import statisticsRouter from "./routes/statisticsRouter.js";
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-// http://localhost:5656/api-docs/
-
 
 app.use(cors());
 app.use(express.json());
@@ -27,7 +24,11 @@ const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 app.use(logger(formatsLogger));
 
 app.use("/api/users", usersRouter);
-// app.use("/api/transactions", transactionsRouter);
+app.use("/api/transactions", transactionRouter);
+app.use("/api/statistics", statisticsRouter);
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// http://localhost:5656/api-docs/
 
 app.use((error, req, res, next) => {
   error.statusCode = error.statusCode || 500;
