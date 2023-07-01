@@ -65,7 +65,6 @@ userSchema.pre("save", async function () {
   this.hashedPassword = newlyCreateHashedPswd;
 });
 
-
 userSchema.method("setAvatarURL", async function (email) {
   try {
     this.avatarURL = await gravatar.url(email, {
@@ -83,6 +82,6 @@ userSchema.method("comparePassword", async function (password) {
   return await bcrypt.compareSync(password, this.hashedPassword);
 });
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model("user", userSchema);
 
 export default User;
