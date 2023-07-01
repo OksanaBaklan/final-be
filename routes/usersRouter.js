@@ -6,6 +6,7 @@ import {
   singleUserDetails,
   createUser,
   loginHandler,
+  logoutHandler,
   avatarHandler,
 } from "../controllers/UserControllers.js";
 import globalTryCatchHandler from "../controllers/errorControllers.js";
@@ -15,7 +16,6 @@ import { authorizationHandler } from "../middleware/authorization.js";
 const router = express.Router();
 
 // http://localhost:5656/api/users/signup
-// signup user
 router.post("/signup", globalTryCatchHandler(createUser));
 
 // localhost:5656/api/users/current
@@ -27,6 +27,13 @@ router.get(
 
 // http://localhost:5656/api/users/login
 router.post("/login", globalTryCatchHandler(loginHandler));
+
+// http://localhost:5656/api/users/logout
+router.post(
+  "/logout",
+  authorizationHandler,
+  globalTryCatchHandler(logoutHandler)
+);
 
 // http://localhost:5656/api/users/avatars
 router.patch(

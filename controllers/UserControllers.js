@@ -123,6 +123,13 @@ export const loginHandler = async (req, res, next) => {
   }
 };
 
+export const logoutHandler = async (req, res, next) => {
+  const { _id } = req.user;
+  await User.findByIdAndUpdate({ _id }, { token: null });
+
+  res.status(204).json();
+};
+
 export const avatarHandler = async (req, res, next) => {
   const id = req.user._id;
   console.log("df");
