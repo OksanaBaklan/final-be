@@ -40,7 +40,7 @@ export const createUser = async (req, res, next) => {
                           <br/>
                           <p>Welcome to wallet-app. Your  account has been created successfully</p>
                           <p>Please click on the below link to confirm your email and activate your account</p>
-                          <a href="${SITE_NAME}/confirm-email/${verificationToken}">Confirm</a>`;
+                          <a href="${SITE_NAME}/verify/${verificationToken}">Click to confirm registration</a>`;
 
   const emailStatus = await sendEmail(email, subject, plainText, htmlText);
   if (!emailStatus) {

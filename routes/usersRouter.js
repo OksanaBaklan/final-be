@@ -8,7 +8,8 @@ import {
   loginHandler,
   logoutHandler,
   avatarHandler,
-  emailConfirmationHandler,verificationTokenHandler
+  emailConfirmationHandler,
+  verificationTokenHandler,
 } from "../controllers/UserControllers.js";
 import globalTryCatchHandler from "../controllers/errorControllers.js";
 import { upload } from "../upload/uploadFile.js";
@@ -22,11 +23,14 @@ router.post("/signup", globalTryCatchHandler(createUser));
 // http://localhost:5656/api/users/login
 router.post("/login", globalTryCatchHandler(loginHandler));
 
-// http://localhost:5656/api/users/signup
+// http://localhost:5656/api/users/verify
 router.post("/verify", globalTryCatchHandler(emailConfirmationHandler));
 
 // http://localhost:5656/api/users/verify/:verificationToken
-router.get("/verify/:verificationToken", globalTryCatchHandler(verificationTokenHandler));
+router.get(
+  "/verify/:verificationToken",
+  globalTryCatchHandler(verificationTokenHandler)
+);
 
 // localhost:5656/api/users/current
 router.get(
