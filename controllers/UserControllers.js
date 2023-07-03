@@ -5,6 +5,7 @@ import { renameFile } from "../helpers/renameFile.js";
 import { sendEmail } from "../helpers/sendEmail.js";
 import path from "path";
 import User from "../models/userModels.js";
+import cloudinary from "cloudinary";
 import fs from "fs";
 
 //create user
@@ -38,7 +39,7 @@ export const createUser = async (req, res, next) => {
   const htmlText = `
                           <h2>Welcome ${userName}!</h2>
                           <br/>
-                          <p>Welcome to wallet-app. Your  account has been created successfully</p>
+                          <p>Welcome to Money Minder App. Your  account has been created successfully</p>
                           <p>Please click on the below link to confirm your email and activate your account</p>
                           <a href="${SITE_NAME}/verify/${verificationToken}">Click to confirm registration</a>`;
 
@@ -113,7 +114,7 @@ export const verificationTokenHandler = async (req, res, next) => {
 //current user
 export const singleUserDetails = async (req, res, next) => {
   const { _id } = req.user;
-  console.log(_id);
+  // console.log(_id);
   const user = await User.findById(_id);
 
   res.status(200).json({
@@ -182,8 +183,6 @@ export const logoutHandler = async (req, res, next) => {
 
 //set avatar
 export const avatarHandler = async (req, res, next) => {
-  // const { id } = req.params;
-  // console.log(req.file);
   const id = req.user._id;
   console.log(req.file);
   const { path: tempUpload, filename } = req.file;
@@ -203,20 +202,41 @@ export const avatarHandler = async (req, res, next) => {
 
   res.status(200).json({
     message: "Image updated",
-    data: { User: avatarURL },
+    data: { avatar: user.avatarURL },
+  });
+};
+
+export const avatarUploader = async (req, res, next) => {
+  const { _id } = req.user;
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_SECRET_KEY,
   });
 
-  // const gallery = [];
-  // req.files.map((img) => gallery.push(img.filename));
+  cloudinary.v2.uploader.upload(
+    req.file.path,
 
-  // const user = await User.findByIdAndUpdate(
-  //   req.userId,
-  //   { $push: { gallery: { $each: gallery } } },
-  //   { new: true }
-  // );
-  // if (user) return res.status(202).json({ gallery: user.gallery });
+    { public_id: Date.now() + req.file.filename },
+    async (err, result) => {
+      if (err) {
+        const error = new Error("Failed to upload the Image");
+        error.statusCode = 400;
+        throw error;
+      }
+      fs.unlinkSync(req.file.path);
 
-  // const err = new Error("Something went wrong");
-  // err.statusCode = 400;
-  // throw err;
+      const user = User.findByIdAndUpdate(
+        _id,
+        { avatarURL: result.url },
+        { new: true }
+      );
+      // console.log(user);
+
+      res.status(200).json({
+        message: "Image updated",
+        data: { avatar: user._update.avatarURL },
+      });
+    }
+  );
 };
