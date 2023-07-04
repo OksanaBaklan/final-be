@@ -8,12 +8,14 @@ import {
   loginHandler,
   logoutHandler,
   avatarHandler,
+  avatarUploader,
   emailConfirmationHandler,
   verificationTokenHandler,
 } from "../controllers/UserControllers.js";
 import globalTryCatchHandler from "../controllers/errorControllers.js";
-import { upload } from "../upload/uploadFile.js";
+// import { upload } from "../upload/uploadFile.js";
 import { authorizationHandler } from "../middleware/authorization.js";
+import multer from "multer";
 
 const router = express.Router();
 
@@ -47,10 +49,20 @@ router.post(
 );
 
 // http://localhost:5656/api/users/avatars
+// router.patch(
+//   "/avatars",
+//   [authorizationHandler, upload.single("avatar")],
+//   globalTryCatchHandler(avatarHandler)
+// );
+const upload = multer({ dest: "images/" });
+
+// http://localhost:5656/api/users/avatars
+
 router.patch(
   "/avatars",
-  [authorizationHandler, upload.single("avatar")],
-  globalTryCatchHandler(avatarHandler)
+  upload.single("image"),
+  authorizationHandler,
+  globalTryCatchHandler(avatarUploader)
 );
 
 export default router;
