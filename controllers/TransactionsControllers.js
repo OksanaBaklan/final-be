@@ -49,7 +49,7 @@ export const createTransactions = async (req, res, next) => {
       $and: [{ owner: _id }, { date: { $gt: date } }],
     });
 
-    const oldBalanc = trAfterNew.balance === undefined ? 0 : trAfterNew.balance;
+    const oldBalanc = trAfterNew.balanisIncomece === undefined ? 0 : trAfterNew.balance;
 
     const quantityFromType =
       trAfterNew.amount === undefined || trAfterNew.isIncome === undefined
