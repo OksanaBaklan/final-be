@@ -36,6 +36,7 @@ export const createTransactions = async (req, res, next) => {
   const { _id, balance } = req.user;
   const { amount, isIncome, date } = req.body;
   const transactionBalance = countTheBalance(isIncome, balance, amount);
+  console.log(transactionBalance);
 
   const numberFromType = castNumberToTrType(amount, isIncome);
 
@@ -43,13 +44,13 @@ export const createTransactions = async (req, res, next) => {
     { $and: [{ owner: _id }, { date: { $gt: date } }] },
     { $inc: { balance: numberFromType } }
   );
-
   if (trMadeLater.matchedCount > 0) {
     const trAfterNew = await Transaction.findOne({
       $and: [{ owner: _id }, { date: { $gt: date } }],
     });
 
-    const oldBalanc = trAfterNew.balanisIncomece === undefined ? 0 : trAfterNew.balance;
+    const oldBalanc =
+      trAfterNew.balanisIncomece === undefined ? 0 : trAfterNew.balance;
 
     const quantityFromType =
       trAfterNew.amount === undefined || trAfterNew.isIncome === undefined
@@ -62,7 +63,7 @@ export const createTransactions = async (req, res, next) => {
       balance: oldBalanc - quantityFromType,
     });
 
-    await User.updateOne({ _id }, { balance: transactionBalance });
+    await User.findByIdAndUpdate(_id, { balance: transactionBalance });
     res.status(201).json(newOldTransaction);
   } else {
     const newTransaction = await Transaction.create({
@@ -71,7 +72,25 @@ export const createTransactions = async (req, res, next) => {
       balance: transactionBalance,
     });
 
-    await User.updateOne({ _id }, { balance: transactionBalance });
+    await User.findByIdAndUpdate(_id, { balance: transactionBalance });
     res.status(201).json(newTransaction);
   }
+};
+
+// delete transaction by ID of user
+
+export const deleteTransactionById = async (req, res) => {
+  const { _id } = req.user;
+  const transactionId = req.params.transactionId;
+  const transaction = await Transaction.findOneAndRemove({
+    _id: transactionId,
+    owner: _id,
+  });
+
+  if (transaction) {
+    return res
+      .status(200)
+      .json({ status: "success", code: 200, data: { transaction } });
+  }
+  throw new CustomError(404, "Not Found");
 };

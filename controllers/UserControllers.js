@@ -34,7 +34,7 @@ export const createUser = async (req, res, next) => {
 
   newUser.hashedPassword = undefined;
 
-  const subject = "Account created at FINANCE-APP";
+  const subject = "Account created at Money Minder App";
   const plainText = `Welcome ${userName}! Your account has been created with use`;
   const htmlText = `
                           <h2>Welcome ${userName}!</h2>
@@ -73,20 +73,22 @@ export const emailConfirmationHandler = async (req, res, next) => {
   }
   const user = await User.findOne({ email });
 
-  console.log(user);
+  // console.log(user);
   if (!user) {
     const err = new Error("User not found");
     err.statusCode = 400;
     throw err;
   }
   const { verified, verificationToken } = user;
+  const { SENDER_EMAIL, SITE_NAME } = process.env;
+
   if (verified) {
     const err = new Error("The verification already done");
     err.statusCode = 400;
     throw err;
   }
   const data = {
-    to: email,
+    to: SENDER_EMAIL,
     subject: "Confirmation of registration",
     html: `<a target="_blank" href="${SITE_NAME}/verify/${verificationToken}">Click to confirm registration</a>`,
     //html: `<a target="_blank" href="${LOCAL_HOST}:${PORT}/api/users/verify/${user.verificationToken}">Click to confirm registration</a>  `,
