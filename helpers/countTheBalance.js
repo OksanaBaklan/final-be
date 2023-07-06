@@ -2,7 +2,7 @@
 
 export const countTheBalance = (isIncome, balance, amount) => {
   console.log(isIncome);
-  if (isIncome === true) {
+  if (isIncome === "true") {
     return (balance * 100 + amount * 100) / 100;
   } else {
     return (balance * 100 - amount * 100) / 100;

@@ -995,6 +995,81 @@
         }
       }
     },
+    "/api/transactions/:transactionId": {
+      "delete": {
+        "summary": " get transactionId from URL",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "type": "object",
+                "example": {
+                  "balance": 1400000,
+                  "transactions": [
+                    {
+                      "id": "someHASH",
+                      "owner": "UserId",
+                      "date": 1644926173283,
+                      "isIncome": true,
+                      "categoryId": "someHASH",
+                      "comment": "Winning the lottery",
+                      "amount": 1000000,
+                      "balance": 1400000
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Please relogin and try agin"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "Fail"
+                    },
+                    "code": {
+                      "type": "number",
+                      "example": "500"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Internal Server Error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/statistics?year=value&month=value": {
       "get": {
         "tags": ["Statistics"],
