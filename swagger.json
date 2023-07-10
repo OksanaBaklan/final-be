@@ -997,7 +997,8 @@
     },
     "/api/transactions/:transactionId": {
       "delete": {
-        "summary": " get transactionId from URL",
+        "tags": ["Transactions"],
+        "summary": "Delete transaction by transactionId",
         "security": [
           {
             "Bearer": []

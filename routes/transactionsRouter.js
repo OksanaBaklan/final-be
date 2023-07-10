@@ -5,6 +5,7 @@ import globalTryCatchHandler from "../controllers/errorControllers.js";
 import {
   createTransactions,
   deleteTransactionById,
+  editTransactionById,
   getAllTransactions,
 } from "../controllers/TransactionsControllers.js";
 import { authorizationHandler } from "../middleware/authorization.js";
@@ -25,6 +26,15 @@ router.post(
 );
 // http://localhost:5656/api/transactions/:transactionId
 
-router.delete('/:transactionId', authorizationHandler, globalTryCatchHandler(deleteTransactionById))
+router.delete(
+  "/:transactionId",
+  authorizationHandler,
+  globalTryCatchHandler(deleteTransactionById)
+);
 
+router.patch(
+  "/:transactionId",
+  authorizationHandler,
+  globalTryCatchHandler(editTransactionById)
+);
 export default router;

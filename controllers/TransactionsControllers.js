@@ -37,6 +37,7 @@ export const createTransactions = async (req, res, next) => {
   const { amount, isIncome, date } = req.body;
   const transactionBalance = countTheBalance(isIncome, balance, amount);
   console.log(transactionBalance);
+  console.log(isIncome);
 
   const numberFromType = castNumberToTrType(amount, isIncome);
 
@@ -77,20 +78,88 @@ export const createTransactions = async (req, res, next) => {
   }
 };
 
-// delete transaction by ID of user
-
-export const deleteTransactionById = async (req, res) => {
+// delete transaction by ID
+export const deleteTransactionById = async (req, res, next) => {
   const { _id } = req.user;
   const transactionId = req.params.transactionId;
+  if (!transactionId) {
+    const err = new Error("This transaction isn't exist");
+    err.statusCode = 400;
+    throw err;
+  }
   const transaction = await Transaction.findOneAndRemove({
     _id: transactionId,
     owner: _id,
   });
-
   if (transaction) {
+    const user = await User.findByIdAndUpdate(
+      transaction.owner,
+      {
+        balance: transaction.isIncome
+          ? transaction.balance - transaction.amount
+          : transaction.balance + transaction.amount,
+      },
+      { new: true }
+    );
+    console.log(user.balance);
+
     return res
       .status(200)
-      .json({ status: "success", code: 200, data: { transaction } });
+      .json({ status: "success", code: 200, data: { balance: user.balance } });
   }
-  throw new CustomError(404, "Not Found");
+};
+
+// update transaction by ID of user
+export const editTransactionById = async (req, res, next) => {
+  const { _id } = req.user;
+  // Here we are getting the updated amount and income type
+
+  // We are getting the id of the transaction from params which we want to update
+  const transactionId = req.params.transactionId;
+
+  if (!transactionId) {
+    const err = new Error("This transaction isn't exist");
+    err.statusCode = 400;
+    throw err;
+  }
+  
+  const oneTransaction = await Transaction.findById(transactionId);
+  const { amount, isIncome, balance } = oneTransaction;
+
+  console.log(
+    " My old balance after deleting the old transaction amount",
+    (isIncome ? balance - amount : balance + amount) + req.body.amount
+  );
+
+  const transaction = await Transaction.findByIdAndUpdate(
+    transactionId,
+    {
+      isIncome: req.body.isIncome,
+
+      balance: req.body.isIncome
+        ? (isIncome ? balance - amount : balance + amount) + req.body.amount
+        : (isIncome ? balance - amount : balance + amount) - req.body.amount,
+
+      amount: req.body.amount,
+    },
+    { new: true }
+  );
+  console.log(transaction);
+
+  const userBalance = await User.findByIdAndUpdate(
+    _id,
+    {
+      balance: transaction.balance,
+    },
+    { new: true }
+  );
+  console.log(userBalance.balance);
+
+  if (transaction) {
+    return res.status(200).json({
+      status: "success",
+      code: 200,
+      data: { userBalance: userBalance.balance },
+    });
+  }
 };
