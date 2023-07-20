@@ -36,8 +36,8 @@ export const createTransactions = async (req, res, next) => {
   const { _id, balance } = req.user;
   const { amount, isIncome, date } = req.body;
   const transactionBalance = countTheBalance(isIncome, balance, amount);
-  console.log(transactionBalance);
-  console.log(isIncome);
+  // console.log(transactionBalance);
+  // console.log(isIncome);
 
   const numberFromType = castNumberToTrType(amount, isIncome);
 
@@ -122,7 +122,7 @@ export const editTransactionById = async (req, res, next) => {
     err.statusCode = 400;
     throw err;
   }
-  
+
   const oneTransaction = await Transaction.findById(transactionId);
   const { amount, isIncome, balance } = oneTransaction;
 

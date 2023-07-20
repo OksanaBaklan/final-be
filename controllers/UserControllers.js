@@ -21,18 +21,19 @@ export const createUser = async (req, res, next) => {
 
   const verificationToken = await Date.now();
 
-  const user = new User({
+  const newUser = new User({
     userName,
     email,
-    hashedPassword: password,
+    // password: password,
     verificationToken,
   });
-  await user.setAvatarURL(email);
+  await newUser.setPassword(password);
+  await newUser.setAvatarURL(email);
+  await newUser.save();
 
-  const newUser = await user.save();
-  console.log(newUser.verificationToken);
+  // console.log(newUser.verificationToken);
 
-  newUser.hashedPassword = undefined;
+  newUser.password = undefined;
 
   const subject = "Account created at Money Minder App";
   const plainText = `Welcome ${userName}! Your account has been created with use`;
@@ -162,17 +163,31 @@ export const loginHandler = async (req, res, next) => {
     await User.findByIdAndUpdate(_id, { token });
 
     res.status(201).json({
-      message: "logged in successfully",
-      data: {
-        token,
-        email: user.email,
-        userName: user.userName,
-        avatar: user.avatarURL,
-        balance: user.balance,
-        transactionCategories: user.transactionCategories,
-      },
+      // message: "logged in successfully",
+      // data: {
+      token,
+      email: user.email,
+      userName: user.userName,
+      avatar: user.avatarURL,
+      balance: user.balance,
+      transactionCategories: user.transactionCategories,
     });
+    // }
   }
+};
+
+//authorize user
+
+export const authorizeUser = async (req, res, next) => {
+  const userId = req.user._id;
+  console.log(userId);
+  const user = await User.findById(userId, { userName: 1, avatar: 1 });
+
+  res.status(201).json({
+    userName: user.userName,
+    userId: user._id,
+    avatar: user.avatarURL,
+  });
 };
 
 //logout user

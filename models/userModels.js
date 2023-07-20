@@ -14,12 +14,12 @@ export const userSchema = new mongoose.Schema(
     userName: {
       type: String,
       match: userNameRegExp,
-      required: true,
+      // required: true,
     },
     email: {
       type: String,
       match: emailRegExp,
-      required: true,
+      // required: true,
       unique: true,
     },
     token: {
@@ -30,7 +30,7 @@ export const userSchema = new mongoose.Schema(
       type: String,
       // required: [true, "Verify token is required"],
     },
-    hashedPassword: {
+    password: {
       type: String,
       required: true,
     },
@@ -57,14 +57,6 @@ export const userSchema = new mongoose.Schema(
   // { versionKey: false, timestamps: true }
 );
 
-userSchema.pre("save", async function () {
-  const saltRounds = 11;
-  const salt = await bcrypt.genSalt(saltRounds);
-  const newlyCreateHashedPswd = await bcrypt.hash(this.hashedPassword, salt);
-
-  this.hashedPassword = newlyCreateHashedPswd;
-});
-
 userSchema.method("setAvatarURL", async function (email) {
   try {
     this.avatarURL = await gravatar.url(email, {
@@ -79,7 +71,16 @@ userSchema.method("setAvatarURL", async function (email) {
 });
 
 userSchema.method("comparePassword", async function (password) {
-  return await bcrypt.compareSync(password, this.hashedPassword);
+  return await bcrypt.compareSync(password, this.password);
+});
+
+userSchema.method("setPassword", async function (password) {
+  try {
+    this.password = await bcrypt.hashSync(password, bcrypt.genSaltSync(10));
+  } catch (error) {
+    console.log(error.message);
+    throw new Error("Failed to set a password");
+  }
 });
 
 const User = mongoose.model("user", userSchema);

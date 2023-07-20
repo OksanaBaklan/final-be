@@ -10,7 +10,7 @@ import {
   avatarHandler,
   avatarUploader,
   emailConfirmationHandler,
-  verificationTokenHandler,
+  verificationTokenHandler,authorizeUser
 } from "../controllers/UserControllers.js";
 import globalTryCatchHandler from "../controllers/errorControllers.js";
 // import { upload } from "../upload/uploadFile.js";
@@ -27,6 +27,9 @@ router.post("/login", globalTryCatchHandler(loginHandler));
 
 // http://localhost:5656/api/users/verify
 router.post("/verify", globalTryCatchHandler(emailConfirmationHandler));
+
+//`http://localhost:5555/api/users/authorize-user
+router.get("/authorize-user",authorizationHandler, globalTryCatchHandler(authorizeUser))
 
 // http://localhost:5656/api/users/verify/:verificationToken
 router.get(

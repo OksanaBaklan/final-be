@@ -22,6 +22,7 @@ export const getStatistics = async (req, res, next) => {
       year: year,
       month: month,
     });
+    // console.log(transactions);
 
     const transactionsExpence = transactions.filter(
       (transaction) => transaction.isIncome === false

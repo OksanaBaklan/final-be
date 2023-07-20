@@ -43,4 +43,21 @@ const transactionSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+transactionSchema.pre("save", function (next) {
+  const date = new Date(this.date);
+  this.year = date.getFullYear();
+  this.month = date.getMonth() + 1;
+  next();
+});
+
+transactionSchema.pre("validate", function (next) {
+  const defaultCategoryId = "321344421";
+  if (this.categoryId === "") {
+    this.categoryId = defaultCategoryId;
+  }
+  next();
+});
+
+
 export default mongoose.model("Transaction", transactionSchema);
