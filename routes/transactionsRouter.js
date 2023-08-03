@@ -7,6 +7,7 @@ import {
   deleteTransactionById,
   editTransactionById,
   getAllTransactions,
+  getTransactionDetails,
 } from "../controllers/TransactionsControllers.js";
 import { authorizationHandler } from "../middleware/authorization.js";
 
@@ -24,7 +25,12 @@ router.post(
   authorizationHandler,
   globalTryCatchHandler(createTransactions)
 );
-// http://localhost:5656/api/transactions/:transactionId
+// http://localhost:5555/api/transactions/:transactionId
+router.get(
+  "/:transactionId",
+  // authorizationHandler,
+  globalTryCatchHandler(getTransactionDetails)
+);
 
 router.delete(
   "/:transactionId",

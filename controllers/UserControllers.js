@@ -177,7 +177,6 @@ export const loginHandler = async (req, res, next) => {
 };
 
 //authorize user
-
 export const authorizeUser = async (req, res, next) => {
   const userId = req.user._id;
   console.log(userId);
