@@ -39,34 +39,34 @@ export const createTransactions = async (req, res, next) => {
   // console.log(transactionBalance);
   // console.log(isIncome);
 
-  const numberFromType = castNumberToTrType(amount, isIncome);
+  // const numberFromType = castNumberToTrType(amount, isIncome);
 
-  const trMadeLater = await Transaction.updateMany(
-    { $and: [{ owner: _id }, { date: { $gt: date } }] },
-    { $inc: { balance: numberFromType } }
-  );
-  if (trMadeLater.matchedCount > 0) {
-    const trAfterNew = await Transaction.findOne({
-      $and: [{ owner: _id }, { date: { $gt: date } }],
-    });
+  // const trMadeLater = await Transaction.updateMany(
+  //   { $and: [{ owner: _id }, { date: { $gt: date } }] },
+  //   { $inc: { balance: numberFromType } }
+  // );
+  // if (trMadeLater.matchedCount > 0) {
+  //   const trAfterNew = await Transaction.findOne({
+  //     $and: [{ owner: _id }, { date: { $gt: date } }],
+  //   });
 
-    const oldBalanc =
-      trAfterNew.balanisIncomece === undefined ? 0 : trAfterNew.balance;
+  //   const oldBalanc =
+  //     trAfterNew.balanisIncomece === undefined ? 0 : trAfterNew.balance;
 
-    const quantityFromType =
-      trAfterNew.amount === undefined || trAfterNew.isIncome === undefined
-        ? 0
-        : castNumberToTrType(trAfterNew.amount, trAfterNew.isIncome);
+  //   const quantityFromType =
+  //     trAfterNew.amount === undefined || trAfterNew.isIncome === undefined
+  //       ? 0
+  //       : castNumberToTrType(trAfterNew.amount, trAfterNew.isIncome);
 
-    const newOldTransaction = await Transaction.create({
-      ...req.body,
-      owner: _id,
-      balance: oldBalanc - quantityFromType,
-    });
+  //   const newOldTransaction = await Transaction.create({
+  //     ...req.body,
+  //     owner: _id,
+  //     balance: oldBalanc - quantityFromType,
+  //   });
 
-    await User.findByIdAndUpdate(_id, { balance: transactionBalance });
-    res.status(201).json(newOldTransaction);
-  } else {
+  //   await User.findByIdAndUpdate(_id, { balance: transactionBalance });
+  //   res.status(201).json(newOldTransaction);
+  // } else {
     const newTransaction = await Transaction.create({
       ...req.body,
       owner: _id,
@@ -75,7 +75,7 @@ export const createTransactions = async (req, res, next) => {
 
     await User.findByIdAndUpdate(_id, { balance: transactionBalance });
     res.status(201).json(newTransaction);
-  }
+  // }
 };
 
 // delete transaction by ID
