@@ -67,14 +67,14 @@ export const createTransactions = async (req, res, next) => {
   //   await User.findByIdAndUpdate(_id, { balance: transactionBalance });
   //   res.status(201).json(newOldTransaction);
   // } else {
-    const newTransaction = await Transaction.create({
-      ...req.body,
-      owner: _id,
-      balance: transactionBalance,
-    });
+  const newTransaction = await Transaction.create({
+    ...req.body,
+    owner: _id,
+    balance: transactionBalance,
+  });
 
-    await User.findByIdAndUpdate(_id, { balance: transactionBalance });
-    res.status(201).json(newTransaction);
+  await User.findByIdAndUpdate(_id, { balance: transactionBalance });
+  res.status(201).json(newTransaction);
   // }
 };
 
@@ -145,10 +145,11 @@ export const editTransactionById = async (req, res, next) => {
           Number(req.body.amount),
 
       amount: req.body.amount,
+      comment: req.body.comment,
     },
     { new: true }
   );
-  console.log(Number(req.body.amount));
+  // console.log(Number(req.body.amount));
 
   const userBalance = await User.findByIdAndUpdate(
     _id,
@@ -167,7 +168,7 @@ export const editTransactionById = async (req, res, next) => {
     return res.status(200).json({
       status: "success",
       code: 200,
-      data: { userBalance: userBalance.balance },
+      data: { userBalance: userBalance.balance, transaction },
     });
   }
 };
