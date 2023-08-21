@@ -45,7 +45,7 @@ router.get(
 );
 
 // http://localhost:5656/api/users/logout
-router.post(
+router.get(
   "/logout",
   authorizationHandler,
   globalTryCatchHandler(logoutHandler)

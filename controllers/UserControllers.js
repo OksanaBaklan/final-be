@@ -162,7 +162,7 @@ export const loginHandler = async (req, res, next) => {
     const { _id } = user;
     await User.findByIdAndUpdate(_id, { token });
 
-    res.status(201).json({
+    res.status(200).json({
       // message: "logged in successfully",
       // data: {
       token,
@@ -191,10 +191,19 @@ export const authorizeUser = async (req, res, next) => {
 
 //logout user
 export const logoutHandler = async (req, res, next) => {
-  const { _id } = req.user;
-  await User.findByIdAndUpdate({ _id }, { token: null });
+  // const { _id } = req.user;
+  // await User.findByIdAndUpdate({ _id }, { token: null });
 
-  res.status(204).json();
+  // res.status(204).json();
+
+  try {
+    const { _id } = req.user;
+    await User.findByIdAndUpdate({ _id }, { token: null });
+
+    res.status(204).json();
+  } catch (error) {
+    next(error);
+  }
 };
 
 //set avatar
@@ -247,7 +256,7 @@ export const avatarUploader = async (req, res, next) => {
         { avatarURL: result.url },
         { new: true }
       );
-      // console.log(user);
+      console.log(user);
 
       res.status(200).json({
         message: "Image updated",
