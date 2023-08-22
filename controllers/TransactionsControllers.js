@@ -162,7 +162,7 @@ export const editTransactionById = async (req, res, next) => {
     },
     { new: true }
   );
-  console.log(userBalance.balance);
+  console.log(_id);
 
   if (transaction) {
     return res.status(200).json({

@@ -233,6 +233,7 @@ export const avatarHandler = async (req, res, next) => {
 
 export const avatarUploader = async (req, res, next) => {
   const { _id } = req.user;
+
   cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD,
     api_key: process.env.CLOUDINARY_API_KEY,
@@ -251,16 +252,16 @@ export const avatarUploader = async (req, res, next) => {
       }
       fs.unlinkSync(req.file.path);
 
-      const user = User.findByIdAndUpdate(
+
+      const user = await User.findByIdAndUpdate(
         _id,
-        { avatarURL: result.url },
+        { avatarURL: result.secure_url },
         { new: true }
       );
-      console.log(user);
 
       res.status(200).json({
         message: "Image updated",
-        data: { avatar: user._update.avatarURL },
+        data: { avatar: user.avatarURL },
       });
     }
   );
