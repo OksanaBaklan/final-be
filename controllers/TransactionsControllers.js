@@ -143,9 +143,10 @@ export const editTransactionById = async (req, res, next) => {
           Number(req.body.amount)
         : (isIncome ? balance - amount : balance + amount) -
           Number(req.body.amount),
-
+      categoryId: req.body.categoryId,
       amount: req.body.amount,
       comment: req.body.comment,
+      date: req.body.date,
     },
     { new: true }
   );
