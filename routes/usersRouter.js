@@ -10,7 +10,10 @@ import {
   avatarHandler,
   avatarUploader,
   emailConfirmationHandler,
-  verificationTokenHandler,authorizeUser
+  verificationTokenHandler,
+  authorizeUser,
+  passwordReset,
+  passwordRecovery,
 } from "../controllers/UserControllers.js";
 import globalTryCatchHandler from "../controllers/errorControllers.js";
 // import { upload } from "../upload/uploadFile.js";
@@ -29,7 +32,11 @@ router.post("/login", globalTryCatchHandler(loginHandler));
 router.post("/verify", globalTryCatchHandler(emailConfirmationHandler));
 
 //`http://localhost:5555/api/users/authorize-user
-router.get("/authorize-user",authorizationHandler, globalTryCatchHandler(authorizeUser))
+router.get(
+  "/authorize-user",
+  authorizationHandler,
+  globalTryCatchHandler(authorizeUser)
+);
 
 // http://localhost:5656/api/users/verify/:verificationToken
 router.get(
@@ -67,5 +74,9 @@ router.patch(
   authorizationHandler,
   globalTryCatchHandler(avatarUploader)
 );
+// http://localhost:5555/api/users/password-reset
+
+router.post("/password-reset", globalTryCatchHandler(passwordReset));
+router.put("/password-reset", globalTryCatchHandler(passwordRecovery));
 
 export default router;

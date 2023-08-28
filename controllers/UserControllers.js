@@ -7,6 +7,7 @@ import path from "path";
 import User from "../models/userModels.js";
 import cloudinary from "cloudinary";
 import fs from "fs";
+import bcrypt from "bcrypt";
 
 //create user
 export const createUser = async (req, res, next) => {
@@ -252,7 +253,6 @@ export const avatarUploader = async (req, res, next) => {
       }
       fs.unlinkSync(req.file.path);
 
-
       const user = await User.findByIdAndUpdate(
         _id,
         { avatarURL: result.secure_url },
@@ -265,4 +265,84 @@ export const avatarUploader = async (req, res, next) => {
       });
     }
   );
+};
+
+export const passwordReset = async (req, res) => {
+  const { email } = req.body;
+  const currentUser = await User.findOne({ email });
+  if (currentUser === null) {
+    const err = new Error("Invalid Email Address");
+    throw err;
+  }
+
+  const payload = {
+    email: currentUser.email,
+    userId: currentUser._id,
+    firstName: currentUser.firstName,
+  };
+
+  const PRIVATE_KEY = currentUser.password;
+  // First we generate token that we want to send to the user in email as params
+
+  const token = jwt.sign(payload, PRIVATE_KEY, { expiresIn: 3600 });
+
+  console.log(token);
+  // After generating the token we are sending email using send-grid
+  const { SENDER_EMAIL, SITE_NAME } = process.env;
+
+  const subject = "Password Reset";
+  const plainText = `  Dear ${currentUser.userName} ! We have received your request to reset the password. Please follow
+        the link to reset your password ${SITE_NAME}/#/password-reset/${currentUser.email}/${token}`;
+
+  const htmlText = `
+            <h2>Dear ${currentUser.userName}!</h2>
+            <p>We have received your request to reset the password. Please follow
+            the link to reset your password 
+                <a href= "${SITE_NAME}/#/password-reset/${currentUser.email}/${token}">Click Here! </a>
+            </p>`;
+
+  const emailSent = await sendEmail(
+    currentUser.email,
+    subject,
+    plainText,
+    htmlText
+  );
+  if (!emailSent) {
+    const err = new Error("Something went wrong please try again");
+    throw err;
+  }
+  res
+    .status(200)
+    .send(
+      "Email sent on your registered email address , please follow the instructions"
+    );
+};
+
+export const passwordRecovery = async (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1];
+
+  const { password, confirmPassword, email } = req.body;
+
+  if (password !== confirmPassword) {
+    const error = new Error("Password and Confirm Password must be same");
+    throw error;
+  }
+
+  const userObject = await User.findOne({ email }, { password: 1 });
+  const PRIVATE_KEY = userObject.password;
+
+  const decodedData = jwt.verify(token, PRIVATE_KEY);
+
+  // As we are going to store a new password in data base
+  // And we keep only hashed passwords in our data base
+  // That is why we need to Hash the password that user has provided to us
+
+  const saltRounds = 11;
+  const salt = await bcrypt.genSalt(saltRounds);
+  const hashedPassword = await bcrypt.hash(password, salt);
+
+  const currentUser = await User.findByIdAndUpdate(decodedData.userId, {
+    password: hashedPassword,
+  });
+  res.status(201).send("Password changed successfully");
 };
