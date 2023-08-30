@@ -267,6 +267,7 @@ export const avatarUploader = async (req, res, next) => {
   );
 };
 
+//password reset
 export const passwordReset = async (req, res) => {
   const { email } = req.body;
   const currentUser = await User.findOne({ email });
@@ -292,13 +293,13 @@ export const passwordReset = async (req, res) => {
 
   const subject = "Password Reset";
   const plainText = `  Dear ${currentUser.userName} ! We have received your request to reset the password. Please follow
-        the link to reset your password ${SITE_NAME}/#/password-reset/${currentUser.email}/${token}`;
+        the link to reset your password ${SITE_NAME}/password-reset/${currentUser.email}/${token}`;
 
   const htmlText = `
             <h2>Dear ${currentUser.userName}!</h2>
             <p>We have received your request to reset the password. Please follow
             the link to reset your password 
-                <a href= "${SITE_NAME}/#/password-reset/${currentUser.email}/${token}">Click Here! </a>
+                <a href= "${SITE_NAME}/password-reset/${currentUser.email}/${token}">Click Here! </a>
             </p>`;
 
   const emailSent = await sendEmail(
@@ -317,7 +318,7 @@ export const passwordReset = async (req, res) => {
       "Email sent on your registered email address , please follow the instructions"
     );
 };
-
+//password recovery
 export const passwordRecovery = async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
 

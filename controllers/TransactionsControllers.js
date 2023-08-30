@@ -36,8 +36,7 @@ export const createTransactions = async (req, res, next) => {
   const { _id, balance } = req.user;
   const { amount, isIncome, date } = req.body;
   const transactionBalance = countTheBalance(isIncome, balance, amount);
-  // console.log(transactionBalance);
-  // console.log(isIncome);
+
 
   // const numberFromType = castNumberToTrType(amount, isIncome);
 
@@ -128,10 +127,10 @@ export const editTransactionById = async (req, res, next) => {
   const oneTransaction = await Transaction.findById(transactionId);
   const { amount, isIncome } = oneTransaction;
 
-  console.log(
-    " My old balance after deleting the old transaction amount",
-    (isIncome ? balance - amount : balance + amount) + req.body.amount
-  );
+  // console.log(
+  //   " My old balance after deleting the old transaction amount",
+  //   (isIncome ? balance - amount : balance + amount) + req.body.amount
+  // );
 
   const transaction = await Transaction.findByIdAndUpdate(
     transactionId,
@@ -163,7 +162,7 @@ export const editTransactionById = async (req, res, next) => {
     },
     { new: true }
   );
-  console.log(_id);
+  // console.log(_id);
 
   if (transaction) {
     return res.status(200).json({

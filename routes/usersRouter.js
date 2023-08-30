@@ -79,4 +79,5 @@ router.patch(
 router.post("/password-reset", globalTryCatchHandler(passwordReset));
 router.put("/password-reset", globalTryCatchHandler(passwordRecovery));
 
+
 export default router;
