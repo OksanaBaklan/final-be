@@ -7,6 +7,8 @@ import connectDB from "./config/db.js";
 import logger from "morgan";
 import swaggerUi from "swagger-ui-express";
 // import swaggerDocument from "./swagger.json" assert { type: "json" };
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
 
 import usersRouter from "./routes/usersRouter.js";
 import transactionRouter from "./routes/transactionsRouter.js";
@@ -16,10 +18,14 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public"));
+// app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "/images")));
+
 const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 app.use(logger(formatsLogger));
 
