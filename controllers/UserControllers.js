@@ -92,8 +92,7 @@ export const emailConfirmationHandler = async (req, res, next) => {
   const data = {
     to: SENDER_EMAIL,
     subject: "Confirmation of registration",
-    html: `<a target="_blank" href="${SITE_NAME}/#/verify/${verificationToken}">Click to confirm registration</a>`,
-    //html: `<a target="_blank" href="${LOCAL_HOST}:${PORT}/api/users/verify/${user.verificationToken}">Click to confirm registration</a>  `,
+    html: `<a target="_blank" href="${SITE_NAME}/verify/${verificationToken}">Click to confirm registration</a>`,
   };
   await sendEmail(data);
 
@@ -299,7 +298,7 @@ export const passwordReset = async (req, res) => {
             <h2>Dear ${currentUser.userName}!</h2>
             <p>We have received your request to reset the password. Please follow
             the link to reset your password 
-                <a href= "${SITE_NAME}/password-reset/${currentUser.email}/${token}">Click Here! </a>
+                <a href= "${SITE_NAME}/#/password-reset/${currentUser.email}/${token}">Click Here! </a>
             </p>`;
 
   const emailSent = await sendEmail(
