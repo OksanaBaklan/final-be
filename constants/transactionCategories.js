@@ -73,14 +73,14 @@ export const transactionCategories = [
   },
   {
     id: "321344421",
-    name: "Regular income",
+    name: "Drugs",
     isInc: true,
     color: "#7FC18F",
     isActive: true,
   },
   {
     id: "321222321",
-    name: "Irregular income",
+    name: "Crypto",
     isInc: true,
     color: "#5C902E",
     isActive: true,
