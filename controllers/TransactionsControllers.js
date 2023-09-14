@@ -7,7 +7,7 @@ import { countTheBalance } from "../helpers/countTheBalance.js";
 import { castNumberToTrType } from "../helpers/castNumberToTrType.js";
 
 export const getAllTransactions = async (req, res, next) => {
-  const { page = 1, limit = 10 } = req.query;
+  const { page = 1, limit = 40 } = req.query;
   const { _id, balance } = req.user;
   const skip = (page - 1) * limit;
 
@@ -36,7 +36,6 @@ export const createTransactions = async (req, res, next) => {
   const { _id, balance } = req.user;
   const { amount, isIncome, date } = req.body;
   const transactionBalance = countTheBalance(isIncome, balance, amount);
-
 
   // const numberFromType = castNumberToTrType(amount, isIncome);
 
